@@ -1,0 +1,22 @@
+ .model-header {
+     display: flex;
+ }
+
+ .Signup-btn-div {
+     text-align: center;
+     position: relative;
+     bottom: 67%;
+     margin-right: 4%;
+ }
+
+ .signup-btn {
+     width: 22%;
+ }
+
+ .form {
+     display: flex;
+
+     flex-flow: column wrap;
+     align-items: center;
+
+ }

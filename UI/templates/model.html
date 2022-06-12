@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap_style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/model_style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    <style type="text/css">
+    body,
+    html {
+        background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+        url("{{ url_for('static', filename='img/background.jpg') }}") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+    </style>
+    <!-- Navbar -->
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                Jon Jon Davidoff
+            </a>
+            <!-- Collapse -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Left -->
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <span class="sr-only">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('model') }}">Model</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="model-container">
+        <!-- Navbar end -->
+        <div class="description">
+            <h1><strong> Model </strong></h1>
+            <span>
+                <p class="header-description-model" id="prediction_output"><strong><u>Predction:</u> No image</strong></p>
+                <p class="header-description-model"><strong>Please Select Amount of passangers:</strong></p>
+            </span>
+        </div>
+        <center>
+            <form class="form">
+                <div class="w-25">
+                    <div class="range-form">
+                        <input type="range" class="form-range form-control-lg" min="0" max="5" step="1" id="range_select" oninput="this.nextElementSibling.value = this.value">
+                        <output class="form-label">3</output>
+                    </div>
+                    <div class="mb-3">
+                        <input class="form-control " type="file" accept="image/jpeg" name="image" id="formFile">
+                    </div>
+                    <div class="mb-3">
+                        <input type="button" class="btn btn-lg btn-outline-secondary my-2 my-sm-1 signup-btn" value="Predict!" id="predict_btn">
+                    </div>
+                </div>
+            </form>
+            <img src="{{ url_for('static', filename='img/two_pass_example.jpg') }}" class="img-fluid" id="image_output"  width="540px"  height="480px" resize="both;">
+            <br />
+            <br />
+            <br />
+        </center>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstap.js') }}"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/model_js.js') }}"></script>
+    <script type="text/javascript">
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+        // connect socket
+        socket.on("connect", () => {
+            socket.emit('connect_event', { data: 'Socket Connected' });
+        });
+
+        // recive file from upload input form
+        let file = null;
+        $("#formFile").change(function(data) {
+            file = data.target.files[0];
+            var image = document.getElementById('image_output');
+            image.src = URL.createObjectURL(file);
+        });
+        // send image to server side
+        $("#predict_btn").click(function() {
+            amount_of_pass = $("#range_select").val();
+            if(file != null){
+                socket.emit('file_transfer', { img: file, amount_of_pass: amount_of_pass });
+            }
+        });
+
+        // recive model prediction 
+        socket.on("prediction", (data) => {
+            data = JSON.parse(data);
+            prediction = data['prediction'];
+            amount_of_pass = data['amount_of_pass'];
+            
+            color = 'red';
+            if (prediction == amount_of_pass) {// paint green if correct and red if not
+                color = 'green';
+            }
+            // update html
+            output_element = $("#prediction_output");
+            new_element = "<p class='header-description-model' id='prediction_output'><strong><u>Predction:</u><span style='color:" + color + ";'> " + prediction + "</span></strong></p>";
+            output_element.replaceWith(new_element);
+        });
+    </script>
+</body>
+
+</html>

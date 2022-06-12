@@ -1,0 +1,33 @@
+body,
+html {
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("{{ url_for('static', filename='background.jpg') }}") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.description {
+    position: relative;
+    bottom: 63%;
+    margin-right: 3%;
+
+}
+
+.header-description {
+    font-size: 2em;
+    color: white;
+    text-align: center;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.Signup-btn-div {
+    text-align: center;
+    position: relative;
+    bottom: 67%;
+    margin-right: 4%;
+}
+
+.signup-btn {
+    width: 22%;
+}
